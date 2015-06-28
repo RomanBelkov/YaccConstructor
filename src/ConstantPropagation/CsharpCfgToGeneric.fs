@@ -15,12 +15,12 @@ open ResharperCsharpTreeUtils
 open ArbitraryOperation
 open ResharperCfgAdditionalInfo
 
-let private (|LoopCfe|_|) (info: ConvertInfo) (cfe: IControlFlowElement) =
+let private (|LoopCfe|_|) (info: ConvertInfo<_>) (cfe: IControlFlowElement) =
     match info.LoopNodes.TryGetValue cfe with
     | true, loopInfo -> Some(loopInfo)
     | _ -> None
 
-let private getGenericNodeId (treeNode: ITreeNode) (info: ConvertInfo) = 
+let private getGenericNodeId (treeNode: ITreeNode) (info: ConvertInfo<_>) = 
     let res = Dictionary.getMappingToOne treeNode info.AstToGenericNodes
     res.Id
 
@@ -31,7 +31,7 @@ let private badIRefExprCastMsg =
     "unable to perform cast to IReferenceExpression"
 let private unexpectedInitializerTypeMsg =
     "unexpected initializer type in local variable declaration"
-let private tryExtractNodeTypeInfo (node: ITreeNode) (info: ConvertInfo) =
+let private tryExtractNodeTypeInfo (node: ITreeNode) (info: ConvertInfo<_>) =
     match node with
     | :? IAssignmentExpression as assignExpr 
         when (assignExpr.Dest :? IReferenceExpression)
@@ -63,7 +63,7 @@ let private tryExtractNodeTypeInfo (node: ITreeNode) (info: ConvertInfo) =
         Some(Declaration(name, getGenericNodeId initializer info))
     | :? ICSharpLiteralExpression as literalExpr ->
         let literalVal = literalExpr.Literal.GetText().Trim[|'\"'|]
-        Some(Literal(literalVal))
+        Some(Literal(literalVal, literalExpr))
     | :? IInvocationExpression as invocExpr ->
         let castToIRefExpr (n: ITreeNode) =
             if n :? IReferenceExpression
@@ -107,7 +107,7 @@ let private tryExtractNodeTypeInfo (node: ITreeNode) (info: ConvertInfo) =
     | _ -> None
 
 let private returnStmtExpressionMsg = "unsupported expression in return statement is met"
-let private toGenericNode (cfe: IControlFlowElement) nodeId (info: ConvertInfo) = 
+let private toGenericNode (cfe: IControlFlowElement) nodeId (info: ConvertInfo<_>) = 
     let nType = 
         match cfe with
         | LoopCfe info _ -> LoopNode

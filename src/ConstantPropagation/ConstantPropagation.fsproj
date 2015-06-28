@@ -56,6 +56,8 @@
     <Compile Include="FsaHelper.fs" />
     <Compile Include="GenerateFsa.fs" />
     <Compile Include="CsharpApprxomationUtils.fs" />
+    <Compile Include="Logger.fs" />
+    <Compile Include="CharFsa.fs" />
     <Compile Include="BuildApproximation.fs" />
     <Compile Include="ApproximateCsharp.fs" />
     <Compile Include="ApproximateJs.fs" />

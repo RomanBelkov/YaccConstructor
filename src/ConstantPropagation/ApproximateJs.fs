@@ -62,8 +62,12 @@ let private build (jsCfg: IJsControlFlowGraf) =
     BidirectGraphFuns.toDot ddg.Graph methodName path
     // end
     let initFsaMap = Map.empty
-    let controlData = { TargetFunction = methodName; TargetNode = fstHotspot; CurRecLevel = 0 }
-    let fsa = buildAutomaton ddg initFsaMap controlData approximate
+    let controlData = { 
+        TargetFunction = methodName; 
+        TargetNode = fstHotspot; 
+        CurRecLevel = 0;
+        LoggerState = Logger.disabledLogger }
+    let fsa = buildAutomaton ddg initFsaMap controlData approximateJs CharFsa.charFsaParams
     // for debug
     let path = Utils.myDebugFilePath ("fsa_" + methodName + ".dot")
     FsaHelper.toDot fsa path

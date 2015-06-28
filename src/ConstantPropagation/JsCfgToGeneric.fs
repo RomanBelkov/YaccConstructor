@@ -23,17 +23,17 @@ let private unexpectedInitializerTypeMsg =
     "unexpected initializer type in local variable declaration"
 
 // utility methods
-let private (|LoopCfe|_|) (info: ConvertInfo) (cfe: IControlFlowElement) =
+let private (|LoopCfe|_|) (info: ConvertInfo<_>) (cfe: IControlFlowElement) =
     match info.LoopNodes.TryGetValue cfe with
     | true, loopInfo -> Some(loopInfo)
     | _ -> None
-let private getGenericNodeId (treeNode: ITreeNode) (info: ConvertInfo) = 
+let private getGenericNodeId (treeNode: ITreeNode) (info: ConvertInfo<_>) = 
     let res = Dictionary.getMappingToOne treeNode info.AstToGenericNodes
     res.Id
 let private isReplaceMethod (name: string) = 
     name = "replace"
 
-let private toGenericNode (cfe: IControlFlowElement) nodeId (info: ConvertInfo) = 
+let private toGenericNode (cfe: IControlFlowElement) nodeId (info: ConvertInfo<_>) = 
     let nType = 
         match cfe with
         | LoopCfe info _ -> LoopNode
@@ -59,7 +59,7 @@ let private toGenericNode (cfe: IControlFlowElement) nodeId (info: ConvertInfo) 
                 Declaration(name, getGenericNodeId varDecl.Value info)
             | :? IJavaScriptLiteralExpression as literalExpr ->
                 let literalVal = literalExpr.Literal.GetText().Trim[|'\"'|]
-                Literal(literalVal)
+                Literal(literalVal, literalExpr)
             | :? IInvocationExpression as invocExpr ->
                 let invokedExpr = invocExpr.InvokedExpression :?> IReferenceExpression
                 let methodName = invokedExpr.Name
